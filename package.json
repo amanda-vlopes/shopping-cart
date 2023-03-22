@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@babel/preset-env": "^7.19.4",
-    "@types/jest": "^29.2.2",
+    "@types/jest": "^29.5.0",
     "babel-jest": "^29.2.1",
     "cypress": "10.6.0",
     "cypress-multi-reporters": "1.6.1",
