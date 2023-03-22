@@ -11,8 +11,11 @@ document.querySelector('.cep-button').addEventListener('click', searchCep);
 
 // Recuperando elemento pai
 const listaProdutos = async () => {
-  const computador = await fetchProductsList('computador');
   const sectionPai = document.querySelector('.products');
+  const loading = document.querySelector('.loading');
+  loading.innerText = 'carregando...';
+  const computador = await fetchProductsList('computador');
+  sectionPai.innerHTML = '';
   computador.forEach((produto) => {
     sectionPai.appendChild(createProductElement(produto));
   });
