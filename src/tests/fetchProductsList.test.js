@@ -22,6 +22,11 @@ describe('Teste a função fetchProductsList', () => {
 
   it('retorno da função fetchProductsList é uma estrutura de dados', async () => {
     const result = await fetchProductsList('computador');
-    expect(typeof result).toBe('object');
+    expect(result).toEqual(computadorSearch);
+  });
+
+  it('ao chamar a função sem argumento retorna um erro com a mensagem: Temo de busca não informado', async () => {
+    const erro = new Error('Termo de busca não informado');
+    await expect(fetchProductsList()).rejects.toThrow(erro);
   });
 });
