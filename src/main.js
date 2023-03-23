@@ -14,11 +14,16 @@ const listaProdutos = async () => {
   const sectionPai = document.querySelector('.products');
   const loading = document.querySelector('.loading');
   loading.innerText = 'carregando...';
-  const computador = await fetchProductsList('computador');
-  sectionPai.innerHTML = '';
-  computador.forEach((produto) => {
-    sectionPai.appendChild(createProductElement(produto));
-  });
+  try {
+    const computador = await fetchProductsList('computador');
+    sectionPai.innerHTML = '';
+    computador.forEach((produto) => {
+      sectionPai.appendChild(createProductElement(produto));
+    });
+  } catch (erro) {
+    loading.classList.add('error');
+    loading.innerText = 'Algum erro ocorreu, recarregue a página e tente novamente';
+  }
 };
 
 window.onload = () => {
