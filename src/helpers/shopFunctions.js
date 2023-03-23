@@ -1,6 +1,10 @@
 import { getSavedCartIDs, removeCartID, saveCartID } from './cartFunctions';
 import { fetchProduct } from './fetchFunctions';
 
+// Elementos HTML utilizados nas funções:
+
+const priceTotal = document.querySelector('.total-price');
+
 // Esses comentários que estão antes de cada uma das funções são chamados de JSdoc,
 // experimente passar o mouse sobre o nome das funções e verá que elas possuem descrições!
 
@@ -41,14 +45,24 @@ export const getIdFromProduct = (product) => (
   product.querySelector('span.product__id').innerText
 );
 
+// Função que remove preço do valor total quando o item é removido:
+
+const subtraiPrice = (valor) => {
+  let priceNumber = parseFloat(priceTotal.textContent);
+  priceNumber -= valor;
+  priceTotal.innerHTML = priceNumber;
+  localStorage.setItem('totalPrice', JSON.stringify(priceNumber));
+};
+
 /**
  * Função que remove o produto do carrinho.
  * @param {Element} li - Elemento do produto a ser removido do carrinho.
  * @param {string} id - ID do produto a ser removido do carrinho.
  */
-const removeCartProduct = (li, id) => {
+const removeCartProduct = (li, id, valor) => {
   li.remove();
   removeCartID(id);
+  subtraiPrice(valor);
 };
 
 /**
@@ -88,13 +102,23 @@ export const createCartProductElement = ({ id, title, price, pictures }) => {
   );
   li.appendChild(removeButton);
 
-  li.addEventListener('click', () => removeCartProduct(li, id));
+  li.addEventListener('click', () => removeCartProduct(li, id, price));
   return li;
+};
+
+// Função para somar preço produto ao preço total
+
+const somaPrice = (valor) => {
+  let priceNumber = parseFloat(priceTotal.textContent);
+  priceNumber += valor;
+  priceTotal.textContent = priceNumber;
+  console.log(priceNumber);
+  localStorage.setItem('totalPrice', JSON.stringify(priceNumber));
 };
 
 // Função para criar um escutador de eventos ao botão - Requisito 8
 
-const adicionaProduto = (botao, idProduto) => {
+const adicionaProduto = (botao, idProduto, priceProduto) => {
   botao.addEventListener('click', async () => {
     saveCartID(idProduto); // o id do produto pode vir da função createProductElement
     // Função adiciona um produto ao carrinho e salva a id ao local storage
@@ -103,6 +127,7 @@ const adicionaProduto = (botao, idProduto) => {
     // O objeto retornado da função fetchProduct com todas as informações do produto é usado como parametro da função createCartProductElement para criar e retornar um produto do carrinho. Esse produto retornado será adicionado como filho do elemento de lista com a classe cart__products:
     const carrinho = document.querySelector('.cart__products');
     carrinho.appendChild(createCartProductElement(informacoes));
+    somaPrice(priceProduto);
   });
 };
 
@@ -138,7 +163,7 @@ export const createProductElement = ({ id, title, thumbnail, price }) => {
   );
   section.appendChild(cartButton);
 
-  adicionaProduto(cartButton, id);
+  adicionaProduto(cartButton, id, price);
 
   return section;
 };
@@ -148,6 +173,8 @@ export const createProductElement = ({ id, title, thumbnail, price }) => {
 // Utilizar a função getSavedCartsIDs - Função que retorna todos os itens do carrinho salvos no localStorage
 // a função retorna um array de ids - Iterar nesse array e pegar cada id para utilizar a função fetchProduct e recuperar as informações de cada produto
 
+// Recuperando o valor total:
+
 export const recuperaCarrinho = async () => {
   const ids = getSavedCartIDs(); // array de produtos salvos no localStorage
   const promises = ids.map((produto) => fetchProduct(produto));
@@ -156,4 +183,8 @@ export const recuperaCarrinho = async () => {
     const carrinho = document.querySelector('.cart__products');
     carrinho.appendChild(createCartProductElement(product));
   });
+  const priceStoraged = JSON.parse(localStorage.getItem('totalPrice'));
+  if (priceStoraged) {
+    priceTotal.innerHTML = priceStoraged;
+  }
 };
