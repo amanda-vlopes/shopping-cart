@@ -7,22 +7,31 @@ document.querySelector('.cep-button').addEventListener('click', searchCep);
 
 // Salvando retorno da função fetchProductList com o parâmetro computador:
 
-// Função para criar uma listagem de produtos
+const sectionPai = document.querySelector('.products');
 
-// Recuperando elemento pai
+// Função para adicionar classe e mensagem
+
+const addMensagem = (classe, mensagem) => {
+  const msg = document.getElementById('mensagem');
+  if (!classe && !mensagem) {
+    sectionPai.innerHTML = '';
+  }
+  msg.classList.add(classe);
+  msg.innerText = mensagem;
+};
+
+// Função para criar a lista de produtos
 const listaProdutos = async () => {
-  const sectionPai = document.querySelector('.products');
-  const loading = document.querySelector('.loading');
-  loading.innerText = 'carregando...';
+  addMensagem('loading', 'carregando...');
   try {
     const computador = await fetchProductsList('computador');
-    sectionPai.innerHTML = '';
+    addMensagem();
     computador.forEach((produto) => {
       sectionPai.appendChild(createProductElement(produto));
     });
   } catch (erro) {
-    loading.classList.add('error');
-    loading.innerText = 'Algum erro ocorreu, recarregue a página e tente novamente';
+    const msgErro = 'Algum erro ocorreu, recarregue a página e tente novamente';
+    addMensagem('error', msgErro);
   }
 };
 
