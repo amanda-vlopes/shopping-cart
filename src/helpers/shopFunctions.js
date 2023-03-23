@@ -1,4 +1,4 @@
-import { removeCartID, saveCartID } from './cartFunctions';
+import { getSavedCartIDs, removeCartID, saveCartID } from './cartFunctions';
 import { fetchProduct } from './fetchFunctions';
 
 // Esses comentários que estão antes de cada uma das funções são chamados de JSdoc,
@@ -92,7 +92,7 @@ export const createCartProductElement = ({ id, title, price, pictures }) => {
   return li;
 };
 
-// Função para criar um escutador de eventos ao botão
+// Função para criar um escutador de eventos ao botão - Requisito 8
 
 const adicionaProduto = (botao, idProduto) => {
   botao.addEventListener('click', async () => {
@@ -141,4 +141,19 @@ export const createProductElement = ({ id, title, thumbnail, price }) => {
   adicionaProduto(cartButton, id);
 
   return section;
+};
+
+// Função para carregar o carrinho de compras ao iniciar a página
+
+// Utilizar a função getSavedCartsIDs - Função que retorna todos os itens do carrinho salvos no localStorage
+// a função retorna um array de ids - Iterar nesse array e pegar cada id para utilizar a função fetchProduct e recuperar as informações de cada produto
+
+export const recuperaCarrinho = async () => {
+  const ids = getSavedCartIDs(); // array de produtos salvos no localStorage
+  const promises = ids.map((produto) => fetchProduct(produto));
+  const infoProdutos = await Promise.all(promises);
+  infoProdutos.forEach((product) => {
+    const carrinho = document.querySelector('.cart__products');
+    carrinho.appendChild(createCartProductElement(product));
+  });
 };
