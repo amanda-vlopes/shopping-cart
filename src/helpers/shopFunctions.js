@@ -1,4 +1,5 @@
-import { removeCartID } from './cartFunctions';
+import { removeCartID, saveCartID } from './cartFunctions';
+import { fetchProduct } from './fetchFunctions';
 
 // Esses comentários que estão antes de cada uma das funções são chamados de JSdoc,
 // experimente passar o mouse sobre o nome das funções e verá que elas possuem descrições!
@@ -91,6 +92,20 @@ export const createCartProductElement = ({ id, title, price, pictures }) => {
   return li;
 };
 
+// Função para criar um escutador de eventos ao botão
+
+const adicionaProduto = (botao, idProduto) => {
+  botao.addEventListener('click', async () => {
+    saveCartID(idProduto); // o id do produto pode vir da função createProductElement
+    // Função adiciona um produto ao carrinho e salva a id ao local storage
+    const informacoes = await fetchProduct(idProduto); // o id do produto pode vir da função createProductElement
+    // Função que faz uma requisição na API usando o id do Produto e retorna um objeto com todas as suas informações - função assíncrona;
+    // O objeto retornado da função fetchProduct com todas as informações do produto é usado como parametro da função createCartProductElement para criar e retornar um produto do carrinho. Esse produto retornado será adicionado como filho do elemento de lista com a classe cart__products:
+    const carrinho = document.querySelector('.cart__products');
+    carrinho.appendChild(createCartProductElement(informacoes));
+  });
+};
+
 /**
  * Função responsável por criar e retornar o elemento do produto.
  * @param {Object} product - Objeto do produto.
@@ -122,6 +137,8 @@ export const createProductElement = ({ id, title, thumbnail, price }) => {
     'Adicionar ao carrinho!',
   );
   section.appendChild(cartButton);
+
+  adicionaProduto(cartButton, id);
 
   return section;
 };
